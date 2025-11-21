@@ -10,6 +10,7 @@
 #include "edge_common.h"
 #include "syscall_nums.h"
 #include "sys/epoll.h"
+#include <sys/poll.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -213,9 +214,31 @@ typedef struct sargs_SYS_sendfile {
   size_t count;
 } sargs_SYS_sendfile;
 
+typedef struct sargs_SYS_socketpair{
+  int domain;
+  int type;
+  int protocol;
+  int sv[2];
+} sargs_SYS_socketpair;
+
+typedef struct sargs_SYS_ppoll{
+  int fds_is_null;
+  int timeout_ts_is_null;
+  int sigmask_is_null;
+  struct pollfd fds_ppoll;
+  nfds_t nfds;
+  struct timespec timeout_ts;
+  sigset_t sigmask_ppoll;
+} sargs_SYS_ppoll;
+
+typedef struct sargs_SYS_ioctl{
+  int fd;
+  int request;
+  char arg[];
+} sargs_SYS_ioctl;
+
 void
 incoming_syscall(struct edge_call* buffer);
-
 #ifdef __cplusplus
 }
 #endif

@@ -22,5 +22,8 @@ uintptr_t io_syscall_sendto(int sockfd, uintptr_t buf, size_t len, int flags,
 uintptr_t io_syscall_sendfile(int out_fd, int in_fd, uintptr_t offset, int count);
 uintptr_t io_syscall_getuid();
 uintptr_t io_syscall_pselect(int nfds, uintptr_t readfds, uintptr_t writefds, uintptr_t exceptfds, uintptr_t timeout, uintptr_t sigmask);
+uintptr_t io_syscall_socketpair(int domain, int type, int protocol, int sv[2]);
+uintptr_t io_syscall_ppoll(uintptr_t fds_ppoll, nfds_t nfds, uintptr_t timeout_ts, uintptr_t sigmask_ppoll);
+uintptr_t io_syscall_ioctl(int fd, unsigned long request, uintptr_t argp);
 #endif /* _NET_WRAP_H_ */
 #endif /* USE_NET_SYSCALL */

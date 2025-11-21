@@ -373,6 +373,15 @@ void handle_syscall(struct encl_ctx* ctx)
   case(SYS_pselect6): 
     ret = io_syscall_pselect((int) arg0, (uintptr_t) arg1, (uintptr_t) arg2, (uintptr_t) arg3, (uintptr_t) arg4, (uintptr_t) arg5);
     break;
+  case(SYS_socketpair):
+    ret = io_syscall_socketpair((int) arg0, (int) arg1, (int) arg2, (int*)arg3); 
+    break; 
+  case(SYS_ppoll):
+    ret = io_syscall_ppoll((uintptr_t) arg0, (nfds_t) arg1, (uintptr_t) arg2, (uintptr_t) arg3);
+    break;
+  case(SYS_ioctl):
+    ret = io_syscall_ioctl((int) arg0, (unsigned long) arg1, (uintptr_t) arg2);
+    break;
 #endif /* USE_NET_SYSCALL */
 
 

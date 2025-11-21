@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "edge_syscall.h"
 #include <fcntl.h>
 #include <stdio.h>
@@ -6,6 +7,9 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <sys/sendfile.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <poll.h>
 // Special edge-call handler for syscall proxying
 void
 incoming_syscall(struct edge_call* edge_call) {
@@ -188,6 +192,21 @@ incoming_syscall(struct edge_call* edge_call) {
       struct timespec *timeout = pselect_args->timeout_is_null ? NULL : &pselect_args->timeout; 
       sigset_t *sigmask = pselect_args->sigmask_is_null ? NULL : &pselect_args->sigmask; 
       ret = pselect(pselect_args->nfds, readfds, writefds, exceptfds, timeout, sigmask);
+      break;
+    case (SYS_socketpair):;
+      sargs_SYS_socketpair *socketpair_args = (sargs_SYS_socketpair *) syscall_info->data; 
+      ret = socketpair(socketpair_args->domain, socketpair_args->type, socketpair_args->protocol,
+		      	socketpair_args->sv); 
+      break;
+    case (SYS_ppoll):;
+      sargs_SYS_ppoll *ppoll_args = (sargs_SYS_ppoll *) syscall_info->data;
+      struct pollfd *fds_ppoll = ppoll_args->fds_is_null ? NULL : &ppoll_args->fds_ppoll;
+      struct timespec *timeout_ts = ppoll_args->timeout_ts_is_null ? NULL : &ppoll_args->timeout_ts;
+      sigset_t *sigmask_ppoll = ppoll_args->sigmask_is_null ? NULL : &ppoll_args->sigmask_ppoll;
+      ret = ppoll(fds_ppoll, ppoll_args->nfds, timeout_ts, sigmask_ppoll);
+    case (SYS_ioctl):;
+      sargs_SYS_ioctl *ioctl_args = (sargs_SYS_ioctl *) syscall_info->data;
+      ret = ioctl(ioctl_args->fd, ioctl_args->request, ioctl_args->arg);
       break;
     default:
       goto syscall_error;

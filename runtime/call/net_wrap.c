@@ -389,4 +389,100 @@ uintptr_t io_syscall_pselect(int nfds, uintptr_t readfds, uintptr_t writefds,
   return ret;
 }
 
+uintptr_t io_syscall_socketpair(int domain, int type, int protocol, int sv[2]){
+  uintptr_t ret = -1;
+  struct edge_syscall* edge_syscall = (struct edge_syscall*)edge_call_data_ptr();
+  edge_syscall->syscall_num = SYS_socketpair;
+
+  sargs_SYS_socketpair *args = (sargs_SYS_socketpair *) edge_syscall->data;
+
+  args->domain = domain; 
+  args->type = type; 
+  args->protocol = protocol; 
+
+  size_t totalsize = sizeof(struct edge_syscall) + sizeof(sargs_SYS_socketpair);
+  ret = dispatch_edgecall_syscall(edge_syscall, totalsize);
+  if (ret == 0) {
+    copy_to_user((void *)sv, &args->sv, 2*sizeof(*sv));
+  }
+
+  print_strace("[runtime] proxied socket: %d \r\n", ret);
+  return ret; 
+}
+
+uintptr_t io_syscall_ppoll(uintptr_t fds_ppoll, nfds_t nfds, uintptr_t timeout_ts, uintptr_t sigmask_ppoll){
+  uintptr_t ret = -1;
+  struct edge_syscall* edge_syscall = (struct edge_syscall*)edge_call_data_ptr();
+  edge_syscall->syscall_num = SYS_ppoll;
+
+  sargs_SYS_ppoll *args = (sargs_SYS_ppoll *) edge_syscall->data;
+
+  args->nfds = nfds;
+  if(fds_ppoll != 0){
+    args->fds_is_null = 0;
+    copy_from_user(&args->fds_ppoll, (void *) fds_ppoll, sizeof(struct pollfd));
+  } else{
+    args->fds_is_null = 1;
+  }
+  if(timeout_ts != 0){
+    args->timeout_ts_is_null = 0;
+    copy_from_user(&args->timeout_ts, (void *) timeout_ts, sizeof(struct timespec));
+  } else{
+    args->timeout_ts_is_null = 1;
+  }
+  if(sigmask_ppoll != 0){
+    args->sigmask_is_null = 0;
+    copy_from_user(&args->sigmask_ppoll, (void *) sigmask_ppoll, sizeof(sigset_t));
+  } else{
+    args->sigmask_is_null = 1;
+  }
+
+  size_t totalsize = (sizeof(struct edge_syscall) + sizeof(sargs_SYS_ppoll));
+  ret = dispatch_edgecall_syscall(edge_syscall, totalsize);
+
+  print_strace("[runtime] proxied ppoll: %d \r\n", ret);
+  return ret;
+}
+
+
+#ifndef FIONBIO
+#define FIONBIO		0x5421
+#endif
+uintptr_t io_syscall_ioctl(int fd, unsigned long request, const void *arg) {
+  struct edge_syscall* edge_syscall = (struct edge_syscall*)edge_call_data_ptr();
+  sargs_SYS_ioctl* args = (sargs_SYS_ioctl*)edge_syscall->data;
+  uintptr_t ret = -1;
+
+  edge_syscall->syscall_num = SYS_ioctl;
+  args->fd = fd;
+
+  size_t arglen;
+
+  print_strace("fd %d, request 0x%x\n", fd, request);
+  switch(request) {
+    case FIONBIO:
+      args->request = request;
+      arglen = sizeof(int);
+      break;
+    default:
+      print_strace("unsupported ioctl lrequest 0x%x\n", request);
+      return -22;
+  }
+
+  // Sanity check that the buffer will fit in the shared memory
+  if(edge_call_check_ptr_valid((uintptr_t)args->arg, arglen) != 0){
+    print_strace("too large length %d\n", arglen);
+    return -22;
+  }
+  copy_from_user(args->arg, arg, arglen);
+
+  size_t totalsize = (sizeof(struct edge_syscall) +
+                      sizeof(sargs_SYS_ioctl) +
+                      arglen);
+  ret = dispatch_edgecall_syscall(edge_syscall, totalsize);
+
+  print_strace("[runtime] proxied ioctl(mode: %d) = %li\r\n", (int)args->argp, ret);
+
+  return ret;
+}
 #endif /* USE_NET_SYSCALL */
