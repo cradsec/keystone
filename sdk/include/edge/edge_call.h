@@ -33,7 +33,7 @@ edge_call_args_ptr(struct edge_call* edge_call, uintptr_t* ptr, size_t* size);
 int
 edge_call_ret_ptr(struct edge_call* edge_call, uintptr_t* ptr, size_t* size);
 uintptr_t
-edge_call_data_ptr();
+edge_call_data_ptr(void);
 int
 edge_call_setup_call(struct edge_call* edge_call, void* ptr, size_t size);
 int

@@ -44,7 +44,7 @@ ocall(
     unsigned long call_id, void* data, size_t data_len, void* return_buffer,
     size_t return_len);
 uintptr_t
-untrusted_mmap();
+untrusted_mmap(void);
 int
 attest_enclave(void* report, void* data, size_t size);
 
