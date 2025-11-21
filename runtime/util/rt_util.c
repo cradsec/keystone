@@ -60,6 +60,17 @@ void rt_page_fault(struct encl_ctx* ctx)
   addr = ctx->sbadaddr;
   cause = ctx->scause;
   printf("[runtime] page fault at 0x%lx on 0x%lx (scause: 0x%lx)\r\n", pc, addr, cause);
+  printf("[runtime]  ra: 0x%016lx  sp :0x%016lx\r\n", ctx->regs.ra, ctx->regs.sp);
+  printf("[runtime]  a0 :0x%016lx  s0 :0x%016lx t0 :0x%016lx\r\n", ctx->regs.a0, ctx->regs.s0, ctx->regs.t0);
+  printf("[runtime]  a1 :0x%016lx  s1 :0x%016lx t1 :0x%016lx\r\n", ctx->regs.a1, ctx->regs.s1, ctx->regs.t1);
+  printf("[runtime]  a2 :0x%016lx  s2 :0x%016lx t2 :0x%016lx\r\n", ctx->regs.a2, ctx->regs.s2, ctx->regs.t2);
+  printf("[runtime]  a3 :0x%016lx  s3 :0x%016lx t3 :0x%016lx\r\n", ctx->regs.a3, ctx->regs.s3, ctx->regs.t3);
+  printf("[runtime]  a4 :0x%016lx  s4 :0x%016lx t4 :0x%016lx\r\n", ctx->regs.a4, ctx->regs.s4, ctx->regs.t4);
+  printf("[runtime]  a5 :0x%016lx  s5 :0x%016lx t5 :0x%016lx\r\n", ctx->regs.a5, ctx->regs.s5, ctx->regs.t5);
+  printf("[runtime]  a6 :0x%016lx  s6 :0x%016lx t6 :0x%016lx\r\n", ctx->regs.a6, ctx->regs.s6, ctx->regs.t6);
+  printf("[runtime]  a7 :0x%016lx  s7 :0x%016lx s8 :0x%016lx\r\n", ctx->regs.s7, ctx->regs.s8);
+  printf("[runtime]  s8 :0x%016lx  s9 :0x%016lx s10:0x%016lx\r\n", ctx->regs.s8, ctx->regs.s9, ctx->regs.s10);
+  printf("[runtime]  s11:0x%016lx\r\n", ctx->regs.s11, ctx->regs.s7);
 #endif
 
   sbi_exit_enclave(-1);
