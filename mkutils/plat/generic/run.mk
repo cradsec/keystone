@@ -34,3 +34,4 @@ debug-connect:
 	$(BUILDROOT_BUILDDIR)/host/bin/riscv$(KEYSTONE_BITS)-buildroot-linux-gnu-gdb \
                 -iex "set KEYSTONE=$(KEYSTONE)" \
                 -x $(KEYSTONE)/scripts/gdb/generic.cfg
+include mkutils/plat/generic/run-ubuntu.mk
