@@ -55,7 +55,7 @@ main(int argc, char** argv) {
   printf("cmd %s, runtime %s, loader %s\n", cmd, runtime, loader);
   if (argc > 1) printf("argv[1] %s\n", argv[1]);
 
-  params.setFreeMemSize(24 * 1024 * 1024);
+  params.setFreeMemSize(23 * 1024 * 1024);
   params.setUntrustedSize(1024 * 1024);
 
   enclave.init(cmd, runtime, loader, params);
