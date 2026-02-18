@@ -439,6 +439,11 @@ uintptr_t io_syscall_ppoll(uintptr_t fds_ppoll, nfds_t nfds, uintptr_t timeout_t
 
   size_t totalsize = (sizeof(struct edge_syscall) + sizeof(sargs_SYS_ppoll));
   ret = dispatch_edgecall_syscall(edge_syscall, totalsize);
+  if (ret > 0) {
+    copy_to_user(&((struct pollfd*)fds_ppoll)->revents,
+		   &args->fds_ppoll.revents,
+		   sizeof(args->fds_ppoll.revents));
+  }
 
   print_strace("[runtime] proxied ppoll: %d \r\n", ret);
   return ret;

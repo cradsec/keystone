@@ -204,6 +204,7 @@ incoming_syscall(struct edge_call* edge_call) {
       struct timespec *timeout_ts = ppoll_args->timeout_ts_is_null ? NULL : &ppoll_args->timeout_ts;
       sigset_t *sigmask_ppoll = ppoll_args->sigmask_is_null ? NULL : &ppoll_args->sigmask_ppoll;
       ret = ppoll(fds_ppoll, ppoll_args->nfds, timeout_ts, sigmask_ppoll);
+      break;
     case (SYS_ioctl):;
       sargs_SYS_ioctl *ioctl_args = (sargs_SYS_ioctl *) syscall_info->data;
       ret = ioctl(ioctl_args->fd, ioctl_args->request, ioctl_args->arg);
