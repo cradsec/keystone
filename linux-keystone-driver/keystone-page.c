@@ -36,6 +36,7 @@ int epm_init(struct epm* epm, unsigned int min_pages)
   phys_addr_t device_phys_addr = 0;
 
   /* try to allocate contiguous memory */
+  epm->ptr    = 0;
   epm->is_cma = 0;
   order = ilog2(min_pages - 1) + 1;
   count = 0x1 << order;
