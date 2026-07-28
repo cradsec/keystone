@@ -86,7 +86,11 @@ static int __init keystone_dev_init(void)
     pr_err("keystone_enclave: misc_register() failed\n");
   }
 
+#if (IS_ENABLED(CONFIG_SOC_SIFIVE_EIC7700))
+  keystone_dev.this_device->coherent_dma_mask = DMA_BIT_MASK(36);
+#else
   keystone_dev.this_device->coherent_dma_mask = DMA_BIT_MASK(32);
+#endif
 
   pr_info("keystone_enclave: " DRV_DESCRIPTION " v" DRV_VERSION "\n");
   return ret;
